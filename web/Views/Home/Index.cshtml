@@ -1,8 +1,76 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model web.Models.Quarantine
+
+@{
+    ViewData["Title"] = "Quarantine Clock";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    #quarantine-clock h4, #time-remaining {
+        width:100%;
+    }
+    #quarantine-clock span {
+        letter-spacing:9px;
+        font-weight:bold;
+    }
+    #quarantine-clock {
+        background-color: aliceblue;
+        padding: 30px;
+        border-radius: 25px;
+        box-shadow: 10px 10px 50px;
+        max-width: 500px;
+        text-align: center;
+    }
+    #quote {
+
+    }
+</style>
+<H2>Quarantine Clock</H2>
+
+<div id="quarantine-clock" class="container">
+<div class="row">
+<h4>@Model.Country has been in quarantine since @Model.StartDate.ToShortDateString() for @Model.Duration days.</h4>
 </div>
+<Br>
+<div class="row">
+<h3 id="time-remaining"></h3>
+</div>
+<br>
+<div class="row">
+<p id="quote">Take a deep breath, everythings going to be fine.</p>
+</div>
+
+<script>
+function startTimer(duration, display) {
+    var timer = duration, days, hours, minutes, seconds;
+    setInterval(function () {
+        days = Math.floor(timer / (60 * 60 * 24));
+        hours = Math.floor((timer % (60 * 60 * 24)) / (60 * 60));
+        minutes = Math.floor((timer % (60 * 60)) / 60);
+        seconds = Math.floor(timer % 60);
+
+        // Adjust for 0's
+        days = days < 10 ? "0" + days : days;
+        hours = hours < 10 ? "0" + hours : hours;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.html("<span>" + days + " DAYS</span><br>" + hours + "h:" + minutes + "m:" + seconds + "s");
+
+        // Once randomly every 300 seconds call the kanye rest api
+        if (Math.floor(Math.random()*300)+1 == 1) {
+            $.get("https://api.kanye.rest/", function(data) {
+                $("#quote").text(data.quote + " ~ Kanye West");
+            });
+        }
+
+        if (--timer < 0) {
+            timer = duration;
+        }
+    }, 1000);
+}
+
+$(function () {
+    var fiveMinutes = @Model.TimeRemaining, display = $('#time-remaining');
+    startTimer(fiveMinutes, display);
+});
+</script>

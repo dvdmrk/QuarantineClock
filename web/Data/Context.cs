@@ -8,6 +8,6 @@ namespace web.Data
         public Context(DbContextOptions<Context> context) : base(context)
         {
         }
-        DbSet<Quarantine> Quarantines { get; set; }
+        public DbSet<Quarantine> Quarantines { get; set; }
     }
 }
